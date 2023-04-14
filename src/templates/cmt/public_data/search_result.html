@@ -1,0 +1,54 @@
+<form id="plans_form">
+	<div id="contentTab" class="mixbar">
+		{% if perms.testplans.add_testplan %}
+		<input type="button" title="Create new test plan" value="New CMT Public Data" class="js-new-plan" data-action-url="{% url "cmt-public-data-new" %}" />
+		<input type="button" value="Clone" title="clone selected test plans." class="js-clone-plans" data-action-url="{% url "plans-clone" %}" disabled />
+		{% endif %}
+		<input type="button" class="js-printable-plans" value="Printable copy" disabled
+			title="Create the printable copy for selected plans." data-action-url="{% url "plans-printable" %}" />
+		<input type="button" value="Export" title="Export the cases for selected plans." class="js-export-plans"
+			data-action-url="{% url "plans-export" %}" disabled />
+	</div>
+	<table id="testplans_table" class="list border-bottom" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
+		<thead>
+			<tr>
+				<th width="20" class="nosort">
+					<input id="id_check_all_plans" class="js-select-all" type="checkbox" title="Select all/Select none" />
+				</th>
+				<th width="20" class="number nosort widthID" title="Sort by api ID">ID</th>
+				<th width="100" class="text nosort" title="Sort by public data description">Description</th>
+				<th width="50" class="text nosort" title="Sort by service">Service</th>
+                <th width="60" class="text nosort" title="Sort by is active">Is Active</th>
+                <th width="80" class="text nosort" title="Sort by public def">Public Def</th>
+				<th class="text nosort" title="Sort by public data input">Input</th>
+				<th width="130" class="number nosort" title="Sort by public data output">Output</th>
+				<th width="60" class="number nosort" title="Sort by author">Author</th>
+				<th width="140" class="number nosort" title="Sort by creadte_date">Create_Date</th>
+				<th class="nosort" width="65">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for public_data in object_list %}
+			<tr class="{% cycle 'odd' 'even' %}{#{% if not public_data.is_active %} line-through inactive{% endif %}#}">
+				<td><input type="checkbox" name="plan" value="{{ public_data.pk }}" title="Select/Unselect"></td>
+				<td class="{% if not public_data.active_flag %}underline{% endif %}"><a href="{{ public_data.get_absolute_url }}">{{ public_data.pk }}</a></td>
+				<td class="{% if not public_data.active_flag %}underline{% endif %}"><a href="{{ public_data.get_absolute_url }}" title="Go to {{ public_data.description }}">{{ public_data.description }} </a></td>
+				<td><a href="">{{ public_data.service }}</a></td>
+				<td>{{ public_data.active_flag }}</td>
+				<td>{{ public_data.public_def }}</td>
+				<td>{{ public_data.input }}</td>
+				<td>{{ public_data.output }}</td>
+				<td>{{ public_data.author }}</td>
+				<td>
+					{{ public_data.create_date }}
+				</td>
+				<td>
+					{% if perms.testplans.change_testplan %}
+					    <a class="editlink" href="{% url "cmt-public-data-edit" public_data.public_data_id %}">Edit</a>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</form>

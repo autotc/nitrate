@@ -1,0 +1,128 @@
+{% extends "tcms_base.html" %}
+{% load static %}
+
+{% block subtitle %}{{ test_plan }}{% endblock %}
+
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
+{% block custom_stylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static "style/print.css" %}" media="print" />
+<style>
+    .display_summary textarea{ background:red; }
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static "style/cmt.css" %}" />
+{% endblock %}
+
+{% block custom_javascript %}
+<script type="text/javascript" src="{% static "js/cmtapi.js" %}"></script>
+<script type="text/javascript" src="{% static "js/cmtutil.js" %}"></script>
+<script type="text/javascript" src="{% static "js/nitrate.testcases.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript">
+{#Nitrate.Utils.after_page_load(Nitrate.TestPlans.Edit.on_load);#}
+jQ(window).on('load', function (){
+    api_edit_on_load();
+});
+</script>
+{% endblock %}
+
+{% block content_type %}
+	<input type="hidden" name="content_type" value="testplans.testplan" />
+	<input type="hidden" name="object_pk" value="{{ cmt_api.pk }}" />
+	<input type="hidden" name="description" value="{{ cmt_api.description }}" />
+{#	<input type="hidden" name="description" value="{{ cmt_api.latext_text.plan_text }}" />#}
+{% endblock %}
+
+{% block contents %}
+
+<div id="content">
+	<div class="sprites crumble">
+		<a href="{% url "nitrate-index" %}">Home</a>
+		>> <a href="{% url "apis-all" %}?is_active=on">Api</a>
+		>> <a href="{{ cmt_api.get_absolute_url }}">{{ cmt_api.api_id }}: {{ cmt_api }}</a>
+		>> Edit
+	</div>
+	<input id="id_plan_id" type="hidden" name="plan_id" value="{{ cmt_api.api_id }}">
+	<div class="control">
+		<span class="right-bar">
+			<a href="{#{% url "plan-text-history" test_plan.plan_id %}#}" class="historylink">
+				Edit History
+			</a>
+		</span>
+	</div>
+	<form action="{% url "api-edit" cmt_api.api_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+		<div id="" class="Detailform border-1">
+			<table class="editor" cellspacing="0">
+				<tr>
+					<td width="20%"><label class="lab strong" id="title_id">Description</label></td>
+					<td>
+						<span class="name summary">{{ form.description }}</span>
+						<span class="errors">{{ form.description.errors }}</span>
+					</td>
+				</tr>
+				<tr>
+					<td><label class="lab strong" id="title_id">Service</label></td>
+					<td>
+						<span class="name summary">{{ form.service }}</span>
+						<span class="errors">{{ form.service.errors }}</span>
+					</td>
+				</tr>
+                <tr>
+					<td><label class="strong">Api Type</label></td>
+					<td>
+						<span >{{ form.api_type }}</span>
+					</td>
+				</tr>
+                <tr>
+					<td><label class="strong">Is Active</label></td>
+					<td>
+						<span >{{ form.active_flag }}</span>
+					</td>
+				</tr>
+                <tr class="normal-api-elem" style="display: {% if form.api_type.value == 2 %} none; {% endif %} ">
+					<td><label class="lab strong" id="title_id">Endpoint</label></td>
+					<td>
+						<span class="name summary">{{ form.endpoint }}</span>
+						<span class="errors">{{ form.endpoint.errors }}</span>
+					</td>
+				</tr>
+                <tr class="normal-api-elem" style="display: {% if form.api_type.value == 2 %} none; {% endif %}">
+					<td><label class="lab strong" id="title_id">Run Way</label></td>
+					<td>
+						<span class="name summary">{{ form.run_way }}</span>
+						<span class="errors">{{ form.run_way.errors }}</span>
+					</td>
+				</tr>
+                <tr class="normal-api-elem" style="display: {% if form.api_type.value == 2 %} none; {% endif %}">
+					<td><label class="lab strong" id="title_id">Tag</label></td>
+					<td>
+						<span class="name summary">{{ form.tag }}</span>
+						<span class="errors">{{ form.tag.errors }}</span>
+					</td>
+				</tr>
+                <tr>
+					<td><label class="lab strong" id="title_id">Input</label></td>
+					<td>
+						<div class="name summary">{{ form.input }}</div>
+						<div class="errors">{{ form.input.errors }}</div>
+					</td>
+				</tr>
+                <tr>
+					<td><label class="lab strong" id="title_id">Output</label></td>
+					<td>
+						<div class="name summary">{{ form.output }}</div>
+						<div class="errors">{{ form.Output.errors }}</div>
+					</td>
+				</tr>
+			</table>
+			<div class="submit-row" id="control_box">
+				<input type="submit" value="Save" />
+				<input type="reset" value="Reset" />
+				<input type="button" value="Back" class="js-back-button" data-action-url="{{ cmt_api.get_absolute_url }}" />
+			</div>
+		</div>
+	</form>
+</div>
+{% endblock %}

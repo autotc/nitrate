@@ -1,0 +1,93 @@
+{% extends "tcms_base.html" %}
+{% load static %}
+
+{% block subtitle %}Create new Public Data{% endblock %}
+
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
+{% block custom_stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{% static "style/cmt.css" %}" />
+{% endblock %}
+{% block custom_javascript %}
+
+<script type="text/javascript" src="{% static "js/cmtpublicdata.js" %}"></script>
+<script type="text/javascript" src="{% static "js/cmtutil.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/admin/RelatedObjectLookups.js" %}"></script>
+<script type="text/javascript">
+{#Nitrate.Utils.after_page_load(Nitrate.TestPlans.Create.on_load);#}
+jQ(window).on('load', function (){
+    public_data_create_on_load();
+});
+</script>
+{% endblock %}
+
+{% block contents %}
+
+<div id="content">
+	<div class="sprites crumble">
+		<a href="{% url "nitrate-index" %}">Home</a>
+		>> <a href="{% url "cmt-public-data-all" %}?is_active=on">Public Data</a>
+		>> New CMT Public Data
+	</div>
+	<form method="post" action="{% url "cmt-public-data-new" %}" enctype="multipart/form-data">{% csrf_token %}
+		<h2>Create New CMT Public Data</h2>
+		<div class="Detailform border-1">
+			<table class="editor" cellspan="0" cellspacing="0">
+				<tr>
+					<td width="20%" valign="top"><label class="lab strong" for="id_title">Public Data Description:</label><span>{{ form.attrib.errors }}</span></td>
+					<td width="80%">
+						<span class="name summary">{{ form.description }}</span>
+						<div>{{ form.description.errors }}</div>
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" valign="top"><label class="lab strong" for="id_product_id">Service:</label></td>
+					<td>
+						<span class="name">{{ form.service }}</span>
+						<span>{{ form.service.errors }}</span>
+						<a id="add_id_product" href="{% url "admin:management_product_add" %}" class="addlink">
+							Add Service
+						</a>
+						<span class="grey">After Add and Refresh page</span>
+					</td>
+				</tr>
+                <tr>
+					<td width="20%" valign="top"><label class="lab strong" for="id_version_id">Is Active:</label></td>
+					<td>
+						<span>{{ form.active_flag }}</span>
+						<span>{{ form.active_flag.errors }}</span>
+					</td>
+				</tr>
+				<tr class="normal-api-elem" {#style="display: none"#}>
+					<td valign="top"><label class="lab strong" for="id_type_id">Public Def:</label></td>
+					<td>
+						<span class="name"> {{ form.public_def }} </span>
+						<div> {{ form.public_def.errors }} </div>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top"><label class="lab strong" for="id_summary" >Input: </label></td>
+					<td>
+						<div class="mec" id ="public_data_input">{{ form.input }}</div>
+						<div>{{ form.input.errors }}</div>
+					</td>
+				</tr>
+                <tr>
+					<td valign="top"><label class="lab strong" for="id_summary">Output: </label></td>
+					<td>
+						<div class="mec" id="public_data_output">{{ form.output }}</div>
+						<div>{{ form.output.errors }}</div>
+					</td>
+				</tr>
+			</table>
+			<div class="submit-row">
+				<input type="submit" value="Create CMT Public Data" />
+				<input type="button" value="Cancel" class="js-cancel-button" />
+			</div>
+		</div>
+	</form>
+</div>
+{% endblock %}

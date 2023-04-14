@@ -1,0 +1,61 @@
+<form id="plans_form">
+	<div id="contentTab" class="mixbar">
+		{% if perms.testplans.add_testplan %}
+		<input type="button" title="Create new test plan" value="New CMT Api" class="js-new-plan" data-action-url="{% url "api-new" %}" />
+		<input type="button" value="Clone" title="clone selected test plans." class="js-clone-plans" data-action-url="{% url "plans-clone" %}" disabled />
+		{% endif %}
+		<input type="button" class="js-printable-plans" value="Printable copy" disabled
+			title="Create the printable copy for selected plans." data-action-url="{% url "plans-printable" %}" />
+		<input type="button" value="Export" title="Export the cases for selected plans." class="js-export-plans"
+			data-action-url="{% url "plans-export" %}" disabled />
+	</div>
+	<table id="testplans_table" class="list border-bottom" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
+		<thead>
+			<tr>
+				<th width="20" class="nosort">
+					<input id="id_check_all_plans" class="js-select-all" type="checkbox" title="Select all/Select none" />
+				</th>
+				<th width="20" class="number nosort widthID" title="Sort by api ID">ID</th>
+				<th width="100" class="text nosort" title="Sort by api name">Description</th>
+				<th width="50" class="text nosort" title="Sort by service">Service</th>
+				<th width="60" class="text nosort" title="Sort by service">Api Type</th>
+				<th width="60" class="text nosort" title="Sort by service">Is Active</th>
+                <th width="100" class="text nosort" title="Sort by endpoint">Endpoint</th>
+                <th width="100" class="text nosort" title="Sort by runway">Run Way</th>
+                <th width="100" class="text nosort" title="Sort by tag">Tag</th>
+				<th class="text nosort" title="Sort by api input">Input</th>
+				<th width="130" class="number nosort" title="Sort by api output">Output</th>
+				<th width="60" class="number nosort" title="Sort by author">Author</th>
+				<th width="140" class="number nosort" title="Sort by creadte_date">Create_Date</th>
+				<th class="nosort" width="65">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for api in object_list %}
+			<tr class="{% cycle 'odd' 'even' %}{#{% if not api.is_active %} line-through inactive{% endif %}#}">
+				<td><input type="checkbox" name="plan" value="{{ api.pk }}" title="Select/Unselect"></td>
+				<td class="{% if not api.active_flag %}underline{% endif %}"><a href="{{ api.get_absolute_url }}">{{ api.pk }}</a></td>
+				<td class="{% if not api.active_flag %}underline{% endif %}"><a href="{{ api.get_absolute_url }}" title="Go to {{ api.description }}">{{ api.description }} </a></td>
+				<td><a href="">{{ api.service }}</a></td>
+				<td>{{ api.api_type }}</td>
+				<td>{{ api.active_flag }}</td>
+				<td>{{ api.endpoint }}</td>
+				<td>{{ api.run_way }}</td>
+				<td>{{ api.tag }}</td>
+				<td>{{ api.input }}</td>
+				<td>{{ api.output }}</td>
+				<td>{{ api.author }}</td>
+				<td>
+					{{ api.create_date }}
+				</td>
+				<td>
+					{% if perms.testplans.change_testplan %}
+					    <a class="editlink" href="{% url "api-edit" api.api_id %}">Edit</a>
+					    <a class="editlink" href="{% url "api-data-edit" api.api_id %}">Edit Data</a>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</form>

@@ -1,0 +1,14 @@
+tr td li {list-style-type: none;}
+.add_btn {
+          background: #C2DFFF;
+          -webkit-border-radius: 28;
+          -moz-border-radius: 28;
+          border-radius: 28px;
+          font-family: Arial;
+          color: #000000;
+          font-size: 13px;
+          padding: 3px;
+          text-decoration: none;
+          width: 600px;
+          height: 25px;
+}

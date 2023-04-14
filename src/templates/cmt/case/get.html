@@ -1,0 +1,226 @@
+{% extends "tcms_base.html" %}
+{% load static %}
+
+{% block subtitle %}{{ test_plan.name }}{% endblock %}
+
+{% block custom_stylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static "style/print.css" %}" media="print" />
+<link rel="stylesheet" type="text/css" href="{% static "style/dataTables/jquery.dataTables.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "style/dataTables/jquery.dataTables_themeroller.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "style/jstree/style.css" %}" />
+{% endblock %}
+{% block custom_javascript %}
+<script type="text/javascript" src="{% static "js/lib/jquery.tablednd.js" %}"></script>
+<script type="text/javascript" src="{% static "js/lib/jquery.dataTables.js" %}"></script>
+<script type="text/javascript" src="{% static "js/lib/jstree.js" %}"></script>
+<script type="text/javascript" src="{% static "js/nitrate.comment.js" %}"></script>
+<script type="text/javascript" src="{% static "js/nitrate.testplans.js" %}"></script>
+<script type="text/javascript" src="{% static "js/nitrate.attachments.js" %}"></script>
+<script type="text/javascript" src="{% static "js/nitrate.toggledetail.js" %}"></script>
+<script type="text/javascript" src="/jsi18n/"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/SelectFilter2.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/SelectBox.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/calendar.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/admin/DateTimeShortcuts.js" %}"></script>
+
+<script type="text/javascript">
+Nitrate.Utils.after_page_load(Nitrate.TestPlans.Details.on_load);
+Nitrate.Utils.after_page_load(Nitrate.Attachments.on_load);
+
+Nitrate.TestPlans.Instance = {
+	pk: {{ cmt_case.pk }},
+	fields: {
+		name: '{{ cmt_case.description }}',
+		service_id: {{ cmt_case.service_id }},
+		author_id: {{ cmt_case.author_id }},
+		{#parent: {{ test_plan.parent.pk|default:'null' }}#}
+	}
+{#	extras: {
+		num_cases: {{ test_plan.case.count }},
+		num_runs: {{ test_plan.run.count }},
+		num_children: {{ test_plan.child_set.count }},
+		get_url_path: '{{ test_plan.get_absolute_url }}'
+	}#}
+}
+</script>
+{% endblock %}
+
+{% block content_type %}
+	<input type="hidden" name="content_type" value="testplans.testplan" />
+	<input type="hidden" name="object_pk" value="{{ cmt_case.pk }}" />
+	<input type="hidden" name="name" value="{{ cmt_case.description }}" />
+	{# <input type="hidden" name="description" value="{{ test_plan.latest_text.plan_text }}" /> #}
+{% endblock %}
+
+{% block contents %}
+<div id="content">
+	<div class="sprites crumble">
+		<a href="{% url "nitrate-index" %}">Home</a>
+		>> <a href="{% url "cmt-cases-all" %}?is_active=on">Case</a>
+		>> {{ cmt_case.case_id }}: {{ cmt_case.description }}
+	</div>
+	<input id="id_plan_id" type="hidden" name="plan_id" value="{{ cmt_case.case_id }}">
+	<div class="control">
+		<span id="id_buttons" class="button">
+{#			<input id="btn_edit" type="button" value="Edit Plan " title="Edit test plan"#}
+{#				data-action-url="{% url "plan-edit" test_plan.plan_id %}"#}
+{#				{% if perms.testplans.change_testplan %}{% else%}disabled{% endif %} />#}
+{#			<input id="btn_clone" type="button" value="Clone Plan" title="Clone this plan to other product"#}
+{#				data-action-url="{% url "plans-clone" %}?plan={{ test_plan.pk }}"#}
+{#				{% if perms.testplans.add_testplan %}{% else %}disabled{% endif %} />#}
+{#			{% if test_plan.is_active %}#}
+{#			<input id="btn_disable" type="button" value="Disable Plan " title="Disabled this plan"{% if not perms.testplans.change_testplan %} disabled{% endif %}>#}
+{#			{% else %}#}
+{#			<input id="btn_enable" type="button" value="Enable Plan " title="Enabled this plan"{% if not perms.testplans.change_testplan %} disabled{% endif %}>#}
+{#			{% endif %}#}
+{#			<input id="btn_export" type="button" value="Export All Cases " title="Export all cases to XML file"#}
+{#				data-action-url="{% url "plans-export" %}?plan={{ test_plan.pk }}" />#}
+{#			<input id="btn_print" type="button" value="Print Plan " title="Print Plan"#}
+{#				data-action-url="{% url "plans-printable" %}?plan={{ test_plan.pk }}" />#}
+		</span>
+	</div>
+	<h2 id="display_title" class="{% if cmt_case.active_flag == 0 %}line-through{% endif %}">
+		{{ cmt_case.description }}
+	</h2>
+	<div class="listinfo_content">
+		<div class="leftlistinfo">
+			<div class="listinfo">
+				<div class="title grey">Service&nbsp;:</div>
+				<div id="display_product" class="name ">
+                    <a href="" title="Search service of {{ cmt_case.service }} ">{{ cmt_case.service }}</a></div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Is Active&nbsp;:</div>
+				<div id="display_product_version" class="name ">{{ cmt_case.active_flag }}</div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Public Request&nbsp;:</div>
+				<div id="display_product_version" class="name ">{{ cmt_case.public_request }}</div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Rel Type&nbsp;:</div>
+				<div id="display_product_version" class="name ">{{ cmt_case.rel_type }}</div>
+			</div>
+			<div class="listinfo">
+				<div class="title grey">Api&nbsp;:</div>
+				<div id="display_type" class="name ">{{ cmt_case.api }}</div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Arrange&nbsp;:</div>
+				<div id="display_type" class="name ">{{ cmt_case.arrange }}</div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Tag&nbsp;:</div>
+				<div id="display_type" class="name ">{{ cmt_case.tag }}</div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Author&nbsp;:</div>
+				<div id="display_author" class="name"> <a href="{% url "user-profile" cmt_case.author.username %}">{{ cmt_case.author }}</a></div>
+			</div>
+			<div class="listinfo">
+				<div class="title grey">Create Time&nbsp;:</div>
+				<div class="name ">{{ cmt_case.create_date }}</div>
+			</div>
+		</div>
+		<div class="rightlistinfo">
+            <div class="listinfo">
+				<div class="title grey">Input&nbsp;:</div>
+				<div id="display_type" class="name ">{{ cmt_case.input }}</div>
+			</div>
+            <div class="listinfo">
+				<div class="title grey">Pass Rule&nbsp;:</div>
+				<div id="display_type" class="name ">{{ cmt_case.pass_rule }}</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+{#	<div id="plan_detail">#}
+{#		<div class="Detailform border-1">#}
+{#			<ul id="contentTab" class="content_tab">#}
+{#				<li id="tab_document" class="tab">#}
+{#					<a href="#document" title="document">Document</a>#}
+{#				</li>#}
+{#				<li id="tab_testcases" class="tab tab_focus">#}
+{#					<a href="#testcases" title="testcases">#}
+{#						Cases (<span id='run_case_count' class="js-testcases-count">{{ test_plan.run_case.count }}</span>/<span id='case_count'>{{ test_plan.case.count }}</span>)#}
+{#					</a>#}
+{#				</li>#}
+{#				<li id="tab_reviewcases" class="tab">#}
+{#					<a href="#reviewcases" title="reviewcases">#}
+{#						Reviewing Cases (<span id='review_case_count' class="js-reviewcases-count">{{ test_plan.review_case.count }}</span>)#}
+{#					</a>#}
+{#				</li>#}
+{#				<li id="tab_testruns" class="tab">#}
+{#					<a href="#testruns" title="testruns">Runs (<span id='run_count'>{{ test_plan.run.count }}</span>)</a>#}
+{#				</li>#}
+{#				<li id="tab_components" class="tab">#}
+{#					<a href="#components" title="components">Default Components (<span id='component_count'>{{ test_plan.component.count }}</span>)</a>#}
+{#				</li>#}
+{#				<li id="tab_attachment" class="tab">#}
+{#					<a href="#attachment" title="attachment">Attachments (<span id='attachment_count'>{{ test_plan.attachments.count }}</span>)</a>#}
+{#				</li>#}
+{#				<li id="tab_tag" class="tab">#}
+{#					<a href="#tag" title="tag">Tags (<span id='tag_count'>{{ test_plan.tag.count }}</span>)</a>#}
+{#				</li>#}
+{#				<li id="tab_log" class="tab">#}
+{#					<a href="#log" title="log">Log</a>#}
+{#				</li>#}
+{#				<li id="tab_treeview" class="tab">#}
+{#					<a href="#treeview" title="treeview">Tree View</a>#}
+{#				</li>#}
+{#			</ul>#}
+{#			<div id="document" class="tab_list" style="display:none">#}
+{#				{% include "plan/get_docs.html" %}#}
+{#			</div>#}
+{#			<div id="attachment" class="tab_list" style="display:none">#}
+{#				{% if perms.management.add_testattachment %}#}
+{#				<div class="mixbar">#}
+{#					<span class="tit">Add attachment</span>#}
+{#					<a href="{% url "plan-attachment" test_plan.pk %}" class="addlink">add</a>#}
+{#				</div>#}
+{#				{% endif %}#}
+{#				{% include "plan/attachments_table.html" with attachments=test_plan.attachments.all from="from_plan" object_id=test_plan.pk %}#}
+{#			</div>#}
+{#			<div id="testruns" class="tab_list" style="display:none;">#}
+{#				{% include "plan/get_runs.html" %}#}
+{#			</div>#}
+{#			<div id="components" class="tab_list" style="display:none;">#}
+{#				<div class="ajax_loading"></div>#}
+{#			</div>#}
+{#			<div id="log" class="tab_list" style="display:none;">#}
+{#				<div><span class="system_help">Change Log of removing test case.</span></div>#}
+{#				{% include "logs_table.html" %}#}
+{#			</div>#}
+{#			<div id="treeview" class="tab_list" style="display:none;">#}
+{#			</div>#}
+{#			<div id="reviewcases" class="tab_list" style="display:none">#}
+{#				<div class="ajax_loading"></div>#}
+{#			</div>#}
+{#			<div id="testcases" class="tab_list">#}
+{#				<div class="ajax_loading"></div>#}
+{#			</div>#}
+{#			<div id="tag" class="tab_list" style="display:none">#}
+{#				<div class="ajax_loading"></div>#}
+{#			</div>#}
+{#		</div>#}
+{#	</div>#}
+
+
+</div>
+<div id="addTagDialog" title="Add Tag" style="display: none">
+	<form id="addTagForm">
+		<div>
+			<label for="add_tag_plan"></label>
+			<input type="text" id="add_tag_plan" name="tags" style="width: 90%; height: 25px; border:solid 1px #ccc; padding-left: 6px" />
+			<div id="id_batch_add_tags_autocomplete" style="z-index: 3"></div>
+		</div>
+	</form>
+</div>
+{#<div id="dlgSetAutomatedState" style="display: none">#}
+{#	<form action="{% url "cases-automated" %}">#}
+{#		{{ set_automated_form.as_p }}#}
+{#	</form>#}
+{#</div>#}
+{% endblock %}
